@@ -1,195 +1,107 @@
-import { StyleSheet, Text, View, Image, TextInput, Button } from 'react-native'
-import React, { useState } from 'react'
+import {
+  Text,
+  StyleSheet,
+  View,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaViewBase,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
+import React from "react";
 
-const Login = ({ navigation }) => {
-    //useState account
-    const [userName, setUserName] = useState("");
-    const [password, setPassword] = useState("");
-    ///
+import styles from "../Styles/styles";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
 
-    //Hàm xử lý đăng nhập
-    // const doLogin = () => {
-    //     //Validate form
-    //     if (userName.length == 0) {
-    //         alert("Hãy nhập tên đăng nhập"); return;
-    //     }
-    //     if (password.length == 0) {
-    //         alert("Hãy nhập mật khẩu"); return;
-    //     }
+const Login = (props) => {
+  //useState account
+  const [data, setData] = React.useState({
+    email: "",
+    password: "",
+    check_textInputChange: false,
+    secureTextEntry: true,
+  });
 
-    //     // let url_check_login = "http://192.168.0.105:3000/account?userName=" + userName;
-    //     let url_check_login = "http://10.24.13.45:3000/account?userName=" + userName;
+  const updateSecureTextEntry = () => {
+    setData({
+      ...data,
+      secureTextEntry: !data.secureTextEntry,
+    });
+  };
 
-    //     //Thực hiện fetch để kiểm lấy dữ liệu về và kiểm tra đăng nhập
-    //     fetch(url_check_login, {
-    //         method: 'GET',
-    //         headers: {
-    //             Accept: 'application/json',
-    //             'Content-Type': 'application/json',
-    //         }
-    //     })
-    //         .then((res) => {
-    //             return res.json();
-    //         })
-    //         .then(async (data_json) => {
-    //             if (data_json.length != 1) { //Sai username
-    //                 alert("Sai tên đăng nhập hoặc lỗi trùng lặp userName"); return;
-    //             } else {
-    //                 let objUser = data_json[0];
-    //                 if (objUser.password != password) {
-    //                     alert("Sai mật khẩu"); return;
-    //                 } else {
-    //                     //Đúng pass
-    //                     try {
-    //                         await AsyncStorage.setItem('loginInfor', JSON.stringify(objUser)) //Lưu thông tin Account vào Storage                            
-    //                         //Phân quyền Admin
-    //                         console.log("Type account: " + objUser.typeAccount);
-    //                         if(objUser.typeAccount == 0){
-    //                             navigation.navigate("Admin")
-    //                         }else if(objUser.typeAccount == 1){
-    //                             navigation.navigate("News")
-    //                         }else{
-    //                             console.log("Lỗi đăng nhập, không xác định được loại tài khoản");
-    //                         }
-    //                     } catch (ex) {
-    //                         //Ném lỗi 
-    //                         console.log("Lỗi khi lưu account vào Storage: " + ex)
-    //                     }
-    //                 }
-    //             }
-    //         })
-    //         .catch((ex) => {
-    //             alert("Lỗi đăng nhập: " + ex)
-    //         })
-    // }
-
-    //Chuyển màn SignUp
-    const handleScreenSignUp = () => {
-        navigation.navigate('SignUp');
-    }
-
-    return (
-        <View style={styles.container}>
-            <Image
-                source={require('./images/imgLogo.png')}
-                style={styles.image} />
-            <Text style={styles.textTitle}>Sign In</Text>
-            <Text style={styles.textAccess}>Access to your account</Text>
-
-            {/**Input */}
-            <TextInput style={styles.input} placeholder='Your user name'
-                onChangeText={(txt) => { setUserName(txt) }} />
-            <TextInput style={styles.input} placeholder='Your password'
-                onChangeText={(txt) => { setPassword(txt) }}
-                secureTextEntry={true} />
-
-            {/* <View style={styles.viewCheckBox}>
-                <BouncyCheckbox
-                    size={25}
-                    fillColor="red"
-                    unfillColor="#FFFFFF"
-                    text="Remember password"
-                    onPress={() => {
-                        alert("Lưu mật khẩu");
-                    }}
-                />
-            </View> */}
-
-            {/*Btn sign in */}
-            <View style={styles.viewButton}>
-                <Button title='Sign In' color={'pink'}
-                    // onPress={doLogin} 
-                    />
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.text_header}>Welcome!</Text>
+      </View>
+      <View style={styles.footer}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <ScrollView>
+            <Text style={styles.text_footer}>Username</Text>
+            <View style={styles.action}>
+              <FontAwesome name="user-o" color="#05375a" size={20} />
+              <TextInput
+                placeholder="Your Username"
+                style={styles.textInput}
+                autoCapitalize="none"
+              />
             </View>
-            <Text style={styles.textForgot}>Forgot password</Text>
-            <Text style={styles.textOrSignIn}>--------------------------- or sign in with ---------------------------</Text>
-            <View style={{ flexDirection: 'row' }}>
-                <Image
-                    source={require('./images/imgFb.png')}
-                    style={styles.imageSignIn} />
-                <Image
-                    source={require('./images/imgTwit.png')}
-                    style={styles.imageSignIn} />
-                <Image
-                    source={require('./images/imgEmail.png')}
-                    style={styles.imageSignIn} />
+            <Text style={[styles.text_footer, { marginTop: 35 }]}>
+              Password
+            </Text>
+            <View style={styles.action}>
+              <FontAwesome name="lock" color="#05375a" size={20} />
+              <TextInput
+                placeholder="Your Password"
+                style={styles.textInput}
+                autoCapitalize="none"
+                secureTextEntry={data.secureTextEntry ? true : false}
+              />
+              <TouchableOpacity onPress={updateSecureTextEntry}>
+                {data.secureTextEntry ? (
+                  <Feather name="eye-off" color="grey" size={20} />
+                ) : (
+                  <Feather name="eye" color="grey" size={20} />
+                )}
+              </TouchableOpacity>
             </View>
-
-            {/**Handle SignUp Screen */}
-            <View style={{ flexDirection: 'row' }}>
-                <Text style={{ marginTop: 2 }}>Don't have a account?</Text>
-                <Text onPress={handleScreenSignUp} style={styles.textSignUp}>Sign Up</Text>
+            <View style={{ marginHorizontal: 50 }}>
+              <TouchableOpacity
+                style={styles.signIn}
+                onPress={() => {
+                  //   props.navigation.navigate("HomeScreen");
+                }}
+              >
+                <Text
+                  style={{ fontSize: 17, color: "white", fontWeight: "bold" }}
+                >
+                  Sign In
+                </Text>
+              </TouchableOpacity>
             </View>
-        </View>
-    )
-}
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 30,
+                justifyContent: "center",
+              }}
+            >
+              <Text>You don't have an account? </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate("SignUp");
+                }}
+              >
+                <Text style={{ color: "#23B4D2", fontSize: 14 }}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default Login;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: 10,
-    },
-    image: {
-        marginTop: 50,
-        width: 100,
-        height: 100
-    },
-    textTitle: {
-        fontSize: 45,
-        fontWeight: 'bold',
-        color: '#000000'
-    },
-    textAccess: {
-        color: '#FFC100',
-        fontSize: 20
-    },
-    input: {
-        height: 45,
-        width: '80%',
-        borderWidth: 2,
-        borderColor: '#ccc',
-        padding: 8,
-        marginTop: 20,
-        backgroundColor: 'white',
-        borderRadius: 5
-    },
-    viewCheckBox: {
-        flexDirection: 'row',
-        marginTop: 20,
-    },
-    textCheckBox: {
-        color: '#000000'
-    },
-    viewButton: {
-        width: 200,
-        marginTop: 20,
-        width: '70%',
-    },
-    textForgot: {
-        marginTop: 20,
-        color: '#2454F8',
-        fontSize: 15,
-        fontStyle: 'normal'
-    },
-    textOrSignIn: {
-        marginTop: 10,
-        fontSize: 15,
-        fontStyle: 'normal'
-    },
-    imageSignIn: {
-        margin: 15,
-        width: 50,
-        height: 50
-    },
-    textSignUp: {
-        marginLeft: 5,
-        color: '#2454F8',
-        fontSize: 16,
-        fontStyle: 'normal',
-    },
-})
-
