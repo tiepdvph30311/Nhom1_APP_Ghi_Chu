@@ -71,7 +71,7 @@ const Login = (props) => {
               <TouchableOpacity
                 style={styles.signIn}
                 onPress={() => {
-                  //   props.navigation.navigate("HomeScreen");
+                  props.navigation.navigate("HomeScreen");
                 }}
               >
                 <Text
