@@ -7,21 +7,55 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  RefreshControl,
 } from "react-native";
 import React, { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 const HomeScreen = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const data = [
-    {
-      id: "1",
-      title: "WorkShop3",
-      date: "16/1/2024",
-      content: "Làm bài tập workshop3 hạn đến 23:59 ngày 16/1/2024",
-    },
-    // Thêm các mục dữ liệu khác nếu cần
-  ];
+  const [notes, setnotes] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  var api_url_notes = "https://65a65fdd74cf4207b4efe010.mockapi.io/notes";
+
+  const getData = async () => {
+    try {
+      // const value = await AsyncStorage.getItem("login");
+      // if (value !== null) {
+      // setobjU(JSON.parse(value));
+      // let obj = JSON.parse(value);
+
+      fetch(api_url_notes)
+        .then((response) => response.json())
+        .then(async (data) => {
+          setnotes(data);
+        })
+        .catch((error) => console.error(error));
+      // }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useFocusEffect(
+    React.useCallback(() => {
+      getData();
+      onRefresh();
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetch(api_url_notes)
+      .then((response) => response.json())
+      .then((data) => setnotes(data))
+      .catch((error) => console.error(error));
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   const handleAddNote = () => {
     // Xử lý sự kiện thêm ghi chú
     console.log("Add Note button pressed");
@@ -35,7 +69,7 @@ const HomeScreen = () => {
     return (
       <TouchableOpacity style={styles.noteContainer}>
         <Text style={styles.noteTitle}>{item.title}</Text>
-        <Text style={styles.noteDate}>{item.date}</Text>
+        <Text style={styles.noteDate}>{item.createAt}</Text>
         <Text style={styles.noteContent} numberOfLines={1}>
           {item.content}
         </Text>
@@ -67,7 +101,10 @@ const HomeScreen = () => {
 
         <FlatList
           style={styles.flastlist}
-          data={data}
+          data={notes}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
