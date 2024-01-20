@@ -12,8 +12,9 @@ import {
 import React, { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
-const HomeScreen = () => {
+import { useFocusEffect, useTheme } from "@react-navigation/native";
+
+const HomeScreen = (props) => {
   const [darkMode, setDarkMode] = useState(false);
   const [notes, setnotes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -108,7 +109,10 @@ const HomeScreen = () => {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("Add");
+          }}>
           <Image
             source={require("./images/new.png")}
             style={{ width: 40, height: 40, marginLeft: 340 }}

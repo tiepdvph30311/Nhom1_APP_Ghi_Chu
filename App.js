@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import Login from "./resource/Login";
 import SignUp from "./resource/SignUp";
 import HomeScreen from "./resource/HomeScreen";
+import Add from "./resource/Add";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -24,6 +25,11 @@ export default function App() {
         <Stack.Screen
           name="HomeScreen"
           component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Add"
+          component={Add}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
