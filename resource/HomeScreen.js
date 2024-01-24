@@ -112,10 +112,15 @@ const HomeScreen = (props) => {
         <TouchableOpacity
           onPress={() => {
             props.navigation.navigate("Add");
-          }}>
+          }}
+        >
           <Image
             source={require("./images/new.png")}
-            style={{ width: 40, height: 40, marginLeft: 340 }}
+            style={{
+              width: 40,
+              height: 40,
+              marginLeft: Dimensions.get("window").width / 1.3,
+            }}
           />
         </TouchableOpacity>
       </View>
@@ -157,10 +162,10 @@ const styles = StyleSheet.create({
   },
   darkModeIcon: {
     marginTop: 15,
-    marginLeft: 340,
+    marginLeft: Dimensions.get("window").width / 1.3,
   },
   flastlist: {
-    height: Dimensions.get("window").height / 1.4,
+    height: Dimensions.get("window").height / 1.5,
   },
   imgadd: {
     width: 20,

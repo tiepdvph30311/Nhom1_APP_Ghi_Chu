@@ -9,11 +9,12 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 
 import styles from "../Styles/styles";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = (props) => {
   //useState account
@@ -24,11 +25,76 @@ const Login = (props) => {
     secureTextEntry: true,
   });
 
+  const [username, setusername] = useState("");
+  const [password, setpassword] = useState("");
+
+  const textInputChange = (val) => {
+    if (val.length != 0) {
+      setData({
+        ...data,
+        username: val,
+        check_textInputChange: true,
+      });
+    } else {
+      setData({
+        ...data,
+        username: val,
+        check_textInputChange: false,
+      });
+    }
+    setusername(val);
+  };
+
+  const handlePasswordChange = (val) => {
+    setData({
+      ...data,
+      password: val,
+    });
+    setpassword(val);
+  };
+
   const updateSecureTextEntry = () => {
     setData({
       ...data,
       secureTextEntry: !data.secureTextEntry,
     });
+  };
+
+  const doLogin = () => {
+    if (username.length == 0) {
+      alert("Vui lòng nhập username");
+      return;
+    }
+    if (password.length == 0) {
+      alert("Vui lòng nhập mật khẩu");
+      return;
+    }
+
+    let url_check_login = `https://65a65fdd74cf4207b4efe010.mockapi.io/users?username=${username}`;
+    fetch(url_check_login)
+      .then((res) => {
+        return res.json();
+      })
+      .then(async (res_login) => {
+        if (res_login.length != 1) {
+          alert("Tài khoản không tồn tại");
+          return;
+        } else {
+          let objU = res_login[0];
+          if (objU.password == password) {
+            try {
+              await AsyncStorage.setItem("login", JSON.stringify(objU));
+              props.navigation.navigate("HomeScreen");
+              setusername("");
+              setpassword("");
+            } catch (e) {
+              console.log(e);
+            }
+          } else {
+            alert("Sai mật khẩu");
+          }
+        }
+      });
   };
 
   return (
@@ -46,6 +112,8 @@ const Login = (props) => {
                 placeholder="Your Username"
                 style={styles.textInput}
                 autoCapitalize="none"
+                onChangeText={textInputChange}
+                value={username}
               />
             </View>
             <Text style={[styles.text_footer, { marginTop: 35 }]}>
@@ -57,6 +125,8 @@ const Login = (props) => {
                 placeholder="Your Password"
                 style={styles.textInput}
                 autoCapitalize="none"
+                onChangeText={(val) => handlePasswordChange(val)}
+                value={password}
                 secureTextEntry={data.secureTextEntry ? true : false}
               />
               <TouchableOpacity onPress={updateSecureTextEntry}>
@@ -68,12 +138,7 @@ const Login = (props) => {
               </TouchableOpacity>
             </View>
             <View style={{ marginHorizontal: 50 }}>
-              <TouchableOpacity
-                style={styles.signIn}
-                onPress={() => {
-                  props.navigation.navigate("HomeScreen");
-                }}
-              >
+              <TouchableOpacity style={styles.signIn} onPress={doLogin}>
                 <Text
                   style={{ fontSize: 17, color: "white", fontWeight: "bold" }}
                 >
