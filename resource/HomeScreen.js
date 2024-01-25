@@ -13,28 +13,32 @@ import React, { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { useFocusEffect, useTheme } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = (props) => {
   const [darkMode, setDarkMode] = useState(false);
   const [notes, setnotes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [objU, setobjU] = useState({});
 
   var api_url_notes = "https://65a65fdd74cf4207b4efe010.mockapi.io/notes";
 
   const getData = async () => {
     try {
-      // const value = await AsyncStorage.getItem("login");
-      // if (value !== null) {
-      // setobjU(JSON.parse(value));
-      // let obj = JSON.parse(value);
+      const value = await AsyncStorage.getItem("login");
+      if (value !== null) {
+        setobjU(JSON.parse(value));
+        const iduser = objU.id;
 
-      fetch(api_url_notes)
-        .then((response) => response.json())
-        .then(async (data) => {
-          setnotes(data);
-        })
-        .catch((error) => console.error(error));
-      // }
+        fetch(api_url_notes)
+          .then((response) => response.json())
+          .then(async (data) => {
+            const filteredNotes = data.filter((note) => note.userid === iduser);
+            setnotes(filteredNotes);
+          })
+          .catch((error) => console.error(error));
+        // }
+      }
     } catch (e) {
       console.log(e);
     }
@@ -50,7 +54,11 @@ const HomeScreen = (props) => {
     setRefreshing(true);
     fetch(api_url_notes)
       .then((response) => response.json())
-      .then((data) => setnotes(data))
+      .then(async (data) => {
+        const iduser = objU.id;
+        const filteredNotes = data.filter((note) => note.userid === iduser);
+        setnotes(filteredNotes);
+      })
       .catch((error) => console.error(error));
     setTimeout(() => {
       setRefreshing(false);
@@ -68,7 +76,12 @@ const HomeScreen = (props) => {
   };
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.noteContainer}>
+      <TouchableOpacity
+        style={styles.noteContainer}
+        onPress={() => {
+          props.navigation.navigate("ChitietScreen", { editNote: item });
+        }}
+      >
         <Text style={styles.noteTitle}>{item.title}</Text>
         <Text style={styles.noteDate}>{item.createAt}</Text>
         <Text style={styles.noteContent} numberOfLines={1}>

@@ -6,6 +6,7 @@ import Login from "./resource/Login";
 import SignUp from "./resource/SignUp";
 import HomeScreen from "./resource/HomeScreen";
 import Add from "./resource/Add";
+import ChitietScreen from "./resource/ChitietScreen";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -30,6 +31,11 @@ export default function App() {
         <Stack.Screen
           name="Add"
           component={Add}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ChitietScreen"
+          component={ChitietScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
