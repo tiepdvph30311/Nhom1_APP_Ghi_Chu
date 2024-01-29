@@ -1,5 +1,6 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, ImageBackground } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, ImageBackground, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Add = (props) => {
 
@@ -11,21 +12,39 @@ const Add = (props) => {
 
     var api_url_notes = "https://65a65fdd74cf4207b4efe010.mockapi.io/notes";
 
+    const getIdUser = async () => {
+        const storedObjU = await AsyncStorage.getItem("login");
+
+        if (storedObjU) {
+            const objU = await JSON.parse(storedObjU);
+            // console.log(objU.id);
+            setUserid(objU.id)
+        } else {
+            console.log("Không có giá trị trong AsyncStorage cho khóa 'login'");
+        }
+    }
+
+
     //Cap nhat ngay hien tai
     useEffect(() => {
         setCreateAt(new Date());
         setIsImportant("1");
+        getIdUser();
     }, []);
 
     //Thanh Son
     const createNew = () => {
         let object = {
-            userid: this.userid,
-            title: this.title,
-            content: this.content,
-            createAt: this.createAt,
-            isImportant: this.isImportant
+            userid: userid,
+            title: title,
+            content: content,
+            createAt: createAt,
+            isImportant: isImportant
         }
+
+        //Validate form
+        if (title.length == 0) { alert("Hãy nhập tiêu đề"); return }
+        if (content.length == 0) { alert("Hãy nhập nội dung"); return }
 
         fetch(api_url_notes, {
             method: 'POST',
@@ -37,13 +56,16 @@ const Add = (props) => {
         })
             .then((response) => {
                 if (response.status == 201) {
-                    alert("Thêm ghi chú thành công");
-                    setUserid = null;
-                    setTitle = null;
-                    setContent = null;
-                    setCreateAt = null;
-                    setIsImportant = null;
-                    props.navigation.navigate("HomeScreen");
+                    ToastAndroid.showWithGravityAndOffset(
+                        'Thêm ghi chú thành công',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        50
+                    );
+                    setContent("");
+                    setTitle("");
+                    props.navigation.navigate("HomeScreen")
                 }
             })
             .catch((exception) => {
@@ -53,52 +75,54 @@ const Add = (props) => {
 
     return (
         <ImageBackground
-            source={require("./images/imgDoiChe.jpg")}
+            source={require("./images/hinhnendt4.jpg")}
             style={styles.container}
         >
             <View style={styles.khung_dialog}>
                 {/*Đây là khu vực chứa nội dung dialog */}
-                <Text style={{ fontSize: 23, padding: 10, color:'white', textAlign: 'center' }}>Bạn đang thêm ghi chú</Text>
+                <Text style={{ fontSize: 23, padding: 10, color: 'white', textAlign: 'center' }}>THÊM GHI CHÚ</Text>
 
-                <TextInput
-                    placeholder='Nhập userId'
-                    style={styles.textInputContainer}
-                    multiline={true} //Hiện thi chiều cao tương ứng với nội dung
-                    numberOfLines={1} // Số dòng hiển thị ban đầu
-                    onChangeText={(txt) => { setUserid(txt) }}
-                />
                 <TextInput
                     placeholder='Nhập tiêu đề'
                     style={styles.textInputContainer}
                     multiline={true} //Hiện thi chiều cao tương ứng với nội dung
-                    numberOfLines={1} // Số dòng hiển thị ban đầu
+                    numberOfLines={2} // Số dòng hiển thị ban đầu
+                    value={title}
+                    textAlignVertical='top'
                     onChangeText={(txt) => { setTitle(txt) }}
                 />
                 <TextInput
                     placeholder='Nhập nội dung'
                     style={styles.textInputContainer}
                     multiline={true} //Hiện thi chiều cao tương ứng với nội dung
-                    numberOfLines={1} // Số dòng hiển thị ban đầu
+                    numberOfLines={25} // Số dòng hiển thị ban đầu
+                    value={content}
+                    textAlignVertical='top'
                     onChangeText={(txt) => { setContent(txt) }}
                 />
-                <TextInput
-                    placeholder='Ngày hiện tại'
-                    style={styles.textInputContainer}
-                    multiline={true} //Hiện thi chiều cao tương ứng với nội dung
-                    numberOfLines={1} // Số dòng hiển thị ban đầu
-                    editable={false}
-                    value={createAt.toString()}
-                />
-                <View style={styles.buttonContainer}>
-                    <Button title='Thêm' color='green' onPress={() => {
-                        // Xử lý khi nhấn nút Thêm
-                        createNew();
-                    }} />
+                <TouchableOpacity
+                    underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
+                    activeOpacity={0.6}
+                    style={styles.touchContainer}
+                    onPress={createNew}>
 
-                    <Button title='Đóng' color='red' onPress={() => {
-                        // Xử lý khi nhấn nút Đóng
-                        props.navigation.navigate("HomeScreen");
-                    }} />
+                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
+                        activeOpacity={0.6}
+                        style={styles.touchContainer}
+                        onPress={createNew}>
+                        <Text style={styles.txtPost}>Lưu</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
+                        activeOpacity={0.6}
+                        style={styles.touchContainer}
+                        onPress={() => props.navigation.navigate("HomeScreen")}>
+                        <Text style={styles.txtDone}>Cancle</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </ImageBackground>
@@ -131,13 +155,29 @@ const styles = StyleSheet.create({
         marginTop: 5,
         borderRadius: 5,
         backgroundColor: '#efface',
-        height: 40,
-        padding: 5
+        // height: 40,
+        padding: 5,
+        fontSize: 15
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around', // Căn giữa và tạo khoảng cách giữa các nút
-        marginTop: 20,
+        marginTop: 10,
 
     },
+    touchContainer: {
+        width: '50%',
+    },
+    txtPost: {
+        textAlign: 'center',
+        backgroundColor: 'green',
+        padding: 10,
+        margin: 5
+    },
+    txtDone: {
+        textAlign: 'center',
+        backgroundColor: 'red',
+        padding: 10,
+        margin: 5
+    }
 })

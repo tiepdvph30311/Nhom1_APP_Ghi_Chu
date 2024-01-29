@@ -43,6 +43,7 @@ const HomeScreen = (props) => {
       console.log(e);
     }
   };
+  
   useFocusEffect(
     React.useCallback(() => {
       getData();
@@ -79,7 +80,7 @@ const HomeScreen = (props) => {
       <TouchableOpacity
         style={styles.noteContainer}
         onPress={() => {
-          props.navigation.navigate("ChitietScreen", { editNote: item });
+          props.navigation.navigate("ChitietScreen", item);
         }}
       >
         <Text style={styles.noteTitle}>{item.title}</Text>
