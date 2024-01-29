@@ -95,7 +95,7 @@ const Add = (props) => {
                     placeholder='Nhập nội dung'
                     style={styles.textInputContainer}
                     multiline={true} //Hiện thi chiều cao tương ứng với nội dung
-                    numberOfLines={25} // Số dòng hiển thị ban đầu
+                    numberOfLines={20} // Số dòng hiển thị ban đầu
                     value={content}
                     textAlignVertical='top'
                     onChangeText={(txt) => { setContent(txt) }}
