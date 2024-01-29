@@ -9,11 +9,11 @@ import {
   Dimensions,
   RefreshControl,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { useFocusEffect, useTheme } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const HomeScreen = (props) => {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,48 +23,59 @@ const HomeScreen = (props) => {
 
   var api_url_notes = "https://65a65fdd74cf4207b4efe010.mockapi.io/notes";
 
-  const getData = async () => {
-    try {
-      const value = await AsyncStorage.getItem("login");
-      if (value !== null) {
-        setobjU(JSON.parse(value));
-        const iduser = objU.id;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const value = await AsyncStorage.getItem("login");
+        if (value !== null) {
+          setobjU(JSON.parse(value));
+          const iduser = JSON.parse(value).id;
 
-        fetch(api_url_notes)
-          .then((response) => response.json())
-          .then(async (data) => {
-            const filteredNotes = data.filter((note) => note.userid === iduser);
-            setnotes(filteredNotes);
-          })
-          .catch((error) => console.error(error));
-        // }
+          fetch(api_url_notes)
+            .then((response) => response.json())
+            .then(async (data) => {
+              const filteredNotes = data.filter(
+                (note) => note.userid === iduser
+              );
+              setnotes(filteredNotes);
+            })
+            .catch((error) => console.error(error));
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  
+    };
+
+    fetchData();
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
-      getData();
-      onRefresh();
+      const fetchData1 = async () => {
+        try {
+          const value = await AsyncStorage.getItem("login");
+          if (value !== null) {
+            setobjU(JSON.parse(value));
+            const iduser = JSON.parse(value).id;
+
+            fetch(api_url_notes)
+              .then((response) => response.json())
+              .then(async (data) => {
+                const filteredNotes = data.filter(
+                  (note) => note.userid === iduser
+                );
+                setnotes(filteredNotes);
+              })
+              .catch((error) => console.error(error));
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      };
+
+      fetchData1();
     }, [])
   );
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetch(api_url_notes)
-      .then((response) => response.json())
-      .then(async (data) => {
-        const iduser = objU.id;
-        const filteredNotes = data.filter((note) => note.userid === iduser);
-        setnotes(filteredNotes);
-      })
-      .catch((error) => console.error(error));
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  };
 
   const handleAddNote = () => {
     // Xử lý sự kiện thêm ghi chú
@@ -117,9 +128,6 @@ const HomeScreen = (props) => {
         <FlatList
           style={styles.flastlist}
           data={notes}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
