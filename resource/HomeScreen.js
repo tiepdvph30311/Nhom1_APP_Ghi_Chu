@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   RefreshControl,
+  TextInput,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,32 +22,44 @@ const HomeScreen = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [objU, setobjU] = useState({});
 
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = () => {
+    if (searchText.trim() === "") {
+      fetchData();
+    } else {
+      const filteredNotes = notes.filter((note) =>
+        note.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setnotes(filteredNotes);
+    }
+  };
+
   var api_url_notes = "https://65a65fdd74cf4207b4efe010.mockapi.io/notes";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const value = await AsyncStorage.getItem("login");
-        if (value !== null) {
-          setobjU(JSON.parse(value));
-          const iduser = JSON.parse(value).id;
+  const fetchData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("login");
+      if (value !== null) {
+        setobjU(JSON.parse(value));
+        const iduser = JSON.parse(value).id;
 
-          fetch(api_url_notes)
-            .then((response) => response.json())
-            .then(async (data) => {
-              const filteredNotes = data.filter(
-                (note) => note.userid === iduser
-              );
-              setnotes(filteredNotes);
-            })
-            .catch((error) => console.error(error));
-        }
-      } catch (e) {
-        console.log(e);
+        fetch(api_url_notes)
+          .then((response) => response.json())
+          .then(async (data) => {
+            const filteredNotes = data.filter((note) => note.userid === iduser);
+            setnotes(filteredNotes);
+          })
+          .catch((error) => console.error(error));
       }
-    };
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
+    // fetchData();
   }, []);
 
   useFocusEffect(
@@ -76,11 +89,6 @@ const HomeScreen = (props) => {
       fetchData1();
     }, [])
   );
-
-  const handleAddNote = () => {
-    // Xử lý sự kiện thêm ghi chú
-    console.log("Add Note button pressed");
-  };
 
   const toggleDarkMode = () => {
     // Xử lý sự kiện chọn chế độ sáng/tối
@@ -125,6 +133,18 @@ const HomeScreen = (props) => {
 
         <Text style={styles.header}>Ghi Chú</Text>
 
+        <View style={{ flexDirection: "row", marginBottom: 5 }}>
+          <TextInput
+            style={styles.input}
+            placeholder="Tìm kiếm theo tiêu đề..."
+            onChangeText={(text) => setSearchText(text)}
+            value={searchText}
+          />
+          <TouchableOpacity style={styles.btnSearch} onPress={handleSearch}>
+            <Text>Tìm Kiếm</Text>
+          </TouchableOpacity>
+        </View>
+
         <FlatList
           style={styles.flastlist}
           data={notes}
@@ -159,10 +179,10 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   header: {
-    marginTop: 15,
-    fontSize: 30,
+    marginTop: 5,
+    fontSize: 25,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   noteContainer: {
     backgroundColor: "#e0e0e0",
@@ -192,5 +212,23 @@ const styles = StyleSheet.create({
   imgadd: {
     width: 20,
     height: 20,
+  },
+  input: {
+    padding: 5,
+    marginLeft: 10,
+    borderWidth: 1,
+    borderColor: "black",
+    width: 200,
+    borderRadius: 10,
+  },
+
+  btnSearch: {
+    marginLeft: 5,
+    width: 80,
+    padding: 5,
+    backgroundColor: "blue",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
   },
 });
