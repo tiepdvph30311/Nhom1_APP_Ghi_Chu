@@ -118,7 +118,7 @@ const ChitietScreen = ({route, navigation }) => {
 
   return (
     <ImageBackground
-      source={require("./images/hinhnendt2.jpg")}
+      source={require("./images/hinhnendt4.jpg")}
       style={styles.container}
     >
       <View style={styles.khung_dialog}>
@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around', // Căn giữa và tạo khoảng cách giữa các nút
     marginTop: 10,
-
   },
   touchContainer: {
     width: '50%',
@@ -211,13 +210,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: 'green',
     padding: 10,
-    margin: 5
+    margin: 5,
+    borderRadius: 10
   },
   txtDone: {
     textAlign: 'center',
     backgroundColor: 'red',
     padding: 10,
-    margin: 5
+    margin: 5,
+    borderRadius: 10
   },
   textContainer: {
     width: '100%',

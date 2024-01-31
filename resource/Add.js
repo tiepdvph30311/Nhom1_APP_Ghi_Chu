@@ -120,7 +120,7 @@ const Add = (props) => {
                         underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
                         activeOpacity={0.6}
                         style={styles.touchContainer}
-                        onPress={() => props.navigation.navigate("HomeScreen")}>
+                        onPress={() => props.navigation.navigate("MyInfor")}>
                         <Text style={styles.txtDone}>Cancle</Text>
                     </TouchableOpacity>
                 </View>
@@ -172,12 +172,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         backgroundColor: 'green',
         padding: 10,
-        margin: 5
+        margin: 5,
+        borderRadius: 10
     },
     txtDone: {
         textAlign: 'center',
         backgroundColor: 'red',
         padding: 10,
-        margin: 5
+        margin: 5,
+        borderRadius: 10
     }
 })

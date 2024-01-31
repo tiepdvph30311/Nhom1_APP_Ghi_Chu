@@ -7,6 +7,7 @@ import SignUp from "./resource/SignUp";
 import HomeScreen from "./resource/HomeScreen";
 import Add from "./resource/Add";
 import ChitietScreen from "./resource/ChitietScreen";
+import MyInfor from "./resource/MyInfor";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -38,6 +39,11 @@ export default function App() {
           component={ChitietScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+        name="MyInfor"
+        component={MyInfor}
+        options={{headerShown: false}}
+        ></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
