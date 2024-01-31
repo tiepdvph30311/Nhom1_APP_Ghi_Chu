@@ -121,7 +121,7 @@ const Add = (props) => {
                         activeOpacity={0.6}
                         style={styles.touchContainer}
                         onPress={() => props.navigation.navigate("MyInfor")}>
-                        <Text style={styles.txtDone}>Cancle</Text>
+                        <Text style={styles.txtDone}>UserInfor, ChangePass, Logout</Text>
                     </TouchableOpacity>
                 </View>
             </View>
