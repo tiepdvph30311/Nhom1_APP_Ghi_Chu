@@ -13,6 +13,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -21,6 +22,9 @@ const HomeScreen = (props) => {
   const [notes, setnotes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [objU, setobjU] = useState({});
+
+  // Khai báo state mới để lưu trữ màu nền
+  const [backgroundColor, setBackgroundColor] = useState("#fff");
 
   const [searchText, setSearchText] = useState("");
 
@@ -58,9 +62,14 @@ const HomeScreen = (props) => {
   };
 
   useEffect(() => {
+    // Cập nhật màu nền tùy thuộc vào trạng thái darkMode
+    if (darkMode) {
+      setBackgroundColor("#333");
+    } else {
+      setBackgroundColor("#fff");
+    }
     fetchData();
-    // fetchData();
-  }, []);
+  }, [darkMode]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -111,25 +120,39 @@ const HomeScreen = (props) => {
     );
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <View>
-        <TouchableOpacity onPress={toggleDarkMode}>
-          {darkMode ? (
-            <Entypo
-              name="light-down"
-              size={28}
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate("MyInfor");
+            }}
+          >
+            <Ionicons
+              name="person-circle-outline"
+              size={33}
               color="black"
-              style={styles.darkModeIcon}
+              style={styles.personIcon}
             />
-          ) : (
-            <Entypo
-              name="light-up"
-              size={28}
-              color="black"
-              style={styles.darkModeIcon}
-            />
-          )}
-        </TouchableOpacity>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleDarkMode}>
+            {darkMode ? (
+              <Entypo
+                name="light-down"
+                size={28}
+                color="black"
+                style={styles.darkModeIcon}
+              />
+            ) : (
+              <Entypo
+                name="light-up"
+                size={28}
+                color="black"
+                style={styles.darkModeIcon}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.header}>Ghi Chú</Text>
 
@@ -187,7 +210,7 @@ const styles = StyleSheet.create({
   noteContainer: {
     backgroundColor: "#e0e0e0",
     padding: 15,
-    marginBottom: 15,
+    marginTop: 10,
     borderRadius: 10,
   },
   noteTitle: {
@@ -204,7 +227,10 @@ const styles = StyleSheet.create({
   },
   darkModeIcon: {
     marginTop: 15,
-    marginLeft: Dimensions.get("window").width / 1.3,
+    marginLeft: Dimensions.get("window").width / 1.35,
+  },
+  personIcon: {
+    marginTop: 15,
   },
   flastlist: {
     height: Dimensions.get("window").height / 1.5,
@@ -226,7 +252,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     width: 80,
     padding: 5,
-    backgroundColor: "blue",
+    backgroundColor: "#55acee",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
