@@ -52,6 +52,9 @@ const HomeScreen = (props) => {
           .then((response) => response.json())
           .then(async (data) => {
             const filteredNotes = data.filter((note) => note.userid === iduser);
+            filteredNotes.sort(
+              (a, b) => Date.parse(b.createAt) - Date.parse(a.createAt)
+            );
             setnotes(filteredNotes);
           })
           .catch((error) => console.error(error));
@@ -85,6 +88,9 @@ const HomeScreen = (props) => {
               .then(async (data) => {
                 const filteredNotes = data.filter(
                   (note) => note.userid === iduser
+                );
+                filteredNotes.sort(
+                  (a, b) => Date.parse(b.createAt) - Date.parse(a.createAt)
                 );
                 setnotes(filteredNotes);
               })
