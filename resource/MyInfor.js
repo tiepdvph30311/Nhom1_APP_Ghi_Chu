@@ -13,6 +13,7 @@ const MyInfor = (props) => {
     const [repeatNewPass, setRepeatNewPass] = useState("");
 
     const [showModelEditPass, setShowModelEditPass] = useState(false);
+    const [showModelEditInfor, setShowModelEditInfor] = useState(false);
 
 
     useEffect(() => {
@@ -126,10 +127,54 @@ const MyInfor = (props) => {
                     }
                 })
                 .catch((ex) => {
-                    console.log("Lỗi khi sửa sản phẩm: " + ex)
+                    console.log("Lỗi khi đổi mật khẩu: " + ex)
                 })
         }
     }
+
+    const EditInfor = async () => {
+        //Validate form
+        if (fullname.length == 0) { alert("Nhập họ và tên mới"); return }
+        if (username.length == 0) { alert("Nhập tên đăng nhập mới"); return }
+
+        let apiEditInfor = "https://65a65fdd74cf4207b4efe010.mockapi.io/users" + "/" + Id;
+        let object = {
+            fullname: fullname,
+            username: username
+        }
+        fetch(apiEditInfor, {
+            method: 'PUT', //Post và Put phải có body, Delete thì không
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(object)
+        })
+            .then((res) => {
+                if (res.status == 200) { //Trạng trái của server trả về khi sửa thành công
+                    ToastAndroid.showWithGravityAndOffset(
+                        'Đổi thông tin thành công!',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                        25,
+                        50
+                    );
+                    let newUserInfor = {
+                        id: Id,
+                        username: username,
+                        password: newPass,
+                        fullname: fullname
+                    }
+
+                    updateUserInfoInStorage(newUserInfor);
+                    setShowModelEditInfor(false);
+                }
+            })
+            .catch((ex) => {
+                console.log("Lỗi khi sửa thông tin: " + ex)
+            })
+    }
+
     return (
         <ImageBackground
             source={require("./images/hinhnendt4.jpg")}
@@ -142,8 +187,14 @@ const MyInfor = (props) => {
                         source={require('./images/imgAvatar.png')}
                         style={styles.profileImage}
                     />
-                    <Text style={styles.txtFullName}>{fullname}</Text>
-                    <Text style={styles.txtAccount}>Account: {username}</Text>
+                    <TouchableOpacity style={styles.btnEditPass} onPress={() => setShowModelEditInfor(true)}>
+                        <Text style={styles.txtFullName}>{fullname}</Text>
+                        <Image
+                            source={require('./images/imgEdit.png')}
+                            style={styles.editImage}
+                        />
+                    </TouchableOpacity>
+                    {/* <Text style={styles.txtAccount}>Account: {username}</Text> */}
                     <TouchableOpacity style={styles.btnEditPass} onPress={() => setShowModelEditPass(true)}>
                         <Text style={styles.textEditPass}>Đổi mật khẩu</Text>
                         <Image
@@ -162,6 +213,62 @@ const MyInfor = (props) => {
                     </View>
                 </View>
             </View>
+
+            <Modal
+                visible={showModelEditInfor}
+                transparent={true}
+                animationType='fade'
+                onRequestClose={() => {
+                    setShowModelEditInfor(false);
+                }}
+            >
+                <View style={styles.modal}>
+                    <View style={styles.khung_dialog}>
+
+                        {/*Đây là khu vực chứa nội dung dialog */}
+                        <Text style={{ fontSize: 25, padding: 10, textAlign: 'center' }}>Đổi thông tin người dùng</Text>
+
+                        <Text style={{ marginTop: 5 }}>Tên người dùng:</Text>
+                        <TextInput
+                            placeholder='Nhập tên người dùng mới'
+                            style={styles.textInputContainer}
+                            multiline={true} //Hiện thi chiều cao tương ứng với nội dung
+                            numberOfLines={1} // Số dòng hiển thị ban đầu
+                            value={fullname}
+                            onChangeText={(txt) => { setFullname(txt) }}
+                        />
+                        <Text style={{ marginTop: 5 }}>Tên đăng nhập:</Text>
+                        <TextInput
+                            placeholder='Nhập tên đăng nhập mới'
+                            style={styles.textInputContainer}
+                            multiline={true} //Hiện thi chiều cao tương ứng với nội dung
+                            numberOfLines={1} // Số dòng hiển thị ban đầu
+                            value={username}
+                            onChangeText={(txt) => { setUsername(txt) }}
+                        />
+
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
+                                activeOpacity={0.6}
+                                style={styles.touchContainer}
+                                onPress={() => {
+                                    EditInfor();
+                                }}>
+                                <Text style={styles.txtPost}>Sửa</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
+                                activeOpacity={0.6}
+                                style={styles.touchContainer}
+                                onPress={() => setShowModelEditInfor(false)}>
+                                <Text style={styles.txtDone}>Cancle</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             <Modal
                 visible={showModelEditPass}
@@ -248,9 +355,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     txtFullName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 5,
+        fontSize: 24, textDecorationLine: 'underline', color: 'blue', margin: 5
     },
     txtAccount: {
         fontSize: 18,

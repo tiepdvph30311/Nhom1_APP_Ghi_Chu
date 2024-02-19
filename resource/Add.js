@@ -1,6 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, ImageBackground, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
 
 const Add = (props) => {
 
@@ -27,7 +28,7 @@ const Add = (props) => {
 
     //Cap nhat ngay hien tai
     useEffect(() => {
-        setCreateAt(new Date());
+        setCreateAt(moment().utcOffset('+07:00').format('YYYY-MM-DD HH:mm:ss'));
         setIsImportant("1");
         getIdUser();
     }, []);
@@ -120,8 +121,8 @@ const Add = (props) => {
                         underlayColor="#f2e3de" // Màu nền khi người dùng nhấn
                         activeOpacity={0.6}
                         style={styles.touchContainer}
-                        onPress={() => props.navigation.navigate("MyInfor")}>
-                        <Text style={styles.txtDone}>UserInfor, ChangePass, Logout</Text>
+                        onPress={() => props.navigation.navigate("HomeScreen")}>
+                        <Text style={styles.txtDone}>Đóng</Text>
                     </TouchableOpacity>
                 </View>
             </View>
